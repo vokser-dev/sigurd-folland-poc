@@ -1,0 +1,209 @@
+.page {
+  width: min(960px, 100%);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.subtitle {
+  max-width: 42rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+}
+
+.upload,
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.fileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 0.65rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.fileButton:hover {
+  background: var(--surface-hover);
+}
+
+.fileInputHidden {
+  display: none;
+}
+
+.fileName,
+.hint {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.preview {
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  background: var(--preview-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.analyzeButton {
+  width: fit-content;
+  padding: 0.7rem 1.35rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.analyzeButton:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.analyzeButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.95rem;
+}
+
+.docMeta,
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem 1.25rem;
+}
+
+.docMeta div,
+.totals div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.docMeta dt,
+.totals dt {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.docMeta dd,
+.totals dd {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.table th,
+.table td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.table th {
+  background: var(--surface);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.rawJson {
+  margin-top: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+}
+
+.rawJson summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.rawJson pre {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1.25rem 1rem 2.5rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.55rem;
+    font-size: 0.85rem;
+  }
+}
