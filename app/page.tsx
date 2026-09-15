@@ -16,11 +16,6 @@ export default function Home() {
   const [result, setResult] = useState<FreightDocument | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [useCameraCapture, setUseCameraCapture] = useState(false);
-
-  useEffect(() => {
-    setUseCameraCapture(window.matchMedia("(pointer: coarse)").matches);
-  }, []);
 
   useEffect(() => {
     if (!file) {
@@ -41,7 +36,16 @@ export default function Home() {
     event.target.value = "";
 
     if (!next) {
-      setError("Kunne ikke lese filen. Prøv JPEG, PNG eller WebP.");
+      setError("Kunne ikke lese filen. Prøv en PDF.");
+      return;
+    }
+
+    const isPdf =
+      next.type === "application/pdf" ||
+      next.name.toLowerCase().endsWith(".pdf");
+
+    if (!isPdf) {
+      setError("Kun PDF er støttet.");
       return;
     }
 
@@ -52,7 +56,7 @@ export default function Home() {
 
   async function onAnalyze() {
     if (!file) {
-      setError("Velg eller ta et bilde først.");
+      setError("Velg en PDF først.");
       return;
     }
 
@@ -62,7 +66,7 @@ export default function Home() {
 
     try {
       const body = new FormData();
-      body.append("image", file);
+      body.append("pdf", file);
 
       const response = await fetch("/api/analyze", {
         method: "POST",
@@ -93,24 +97,28 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Fraktseddel AI</h1>
+        <div>
+          <p className={styles.brand}>Norgesdekk</p>
+          <span className={styles.brandAccent} aria-hidden="true" />
+        </div>
+        <h1 className={styles.headline}>Leveransedokument AI</h1>
         <p className={styles.subtitle}>
-          Last opp eller ta bilde av en fraktseddel. Modellen henter ut
-          strukturerte data. Ingenting lagres.
+          Last opp PDF av fraktseddel eller leveransedokument. Hent ut
+          produktnummer, antall/levert og vekt — klart for mottak. Ingenting
+          lagres.
         </p>
       </header>
 
       <section className={styles.upload} aria-labelledby="upload-heading">
         <h2 id="upload-heading" className={styles.sectionTitle}>
-          Bilde
+          PDF
         </h2>
 
         <input
           ref={fileInputRef}
           className={styles.fileInputHidden}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/*"
-          capture={useCameraCapture ? "environment" : undefined}
+          accept="application/pdf,.pdf"
           onChange={onFileChange}
           tabIndex={-1}
           aria-hidden="true"
@@ -121,21 +129,20 @@ export default function Home() {
           className={styles.fileButton}
           onClick={openFilePicker}
         >
-          Velg eller ta bilde
+          Velg PDF
         </button>
 
         {file ? (
           <p className={styles.fileName}>{file.name}</p>
         ) : (
-          <p className={styles.hint}>JPEG, PNG eller WebP — maks 10 MB</p>
+          <p className={styles.hint}>PDF — maks 20 MB</p>
         )}
 
         {previewUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <iframe
             className={styles.preview}
             src={previewUrl}
-            alt="Forhåndsvisning av fraktseddel"
+            title="Forhåndsvisning av leveransedokument"
           />
         ) : null}
 
@@ -156,6 +163,10 @@ export default function Home() {
       </section>
 
       {result ? <ResultView document={result} /> : null}
+
+      <footer className={styles.footer}>
+        PoC for Norgesdekk AS — dekk &amp; felg grossist
+      </footer>
     </div>
   );
 }
@@ -173,7 +184,7 @@ function ResultView({ document }: { document: FreightDocument }) {
           <dd>{displayValue(document.supplier)}</dd>
         </div>
         <div>
-          <dt>Fraktseddelnummer</dt>
+          <dt>Dokumentnummer</dt>
           <dd>{displayValue(document.documentNumber)}</dd>
         </div>
         <div>
@@ -181,7 +192,7 @@ function ResultView({ document }: { document: FreightDocument }) {
           <dd>{displayValue(document.documentDate)}</dd>
         </div>
         <div>
-          <dt>Produktordrenummer</dt>
+          <dt>Ordrenummer</dt>
           <dd>{displayValue(document.orderNumber)}</dd>
         </div>
       </dl>
@@ -191,16 +202,16 @@ function ResultView({ document }: { document: FreightDocument }) {
           <thead>
             <tr>
               <th scope="col">Produkt</th>
-              <th scope="col">Varenr.</th>
+              <th scope="col">Produktnr. / artikkelnr.</th>
+              <th scope="col" className={styles.numeric}>
+                Antall / levert
+              </th>
+              <th scope="col" className={styles.numeric}>
+                Vekt
+              </th>
               <th scope="col">Batch</th>
               <th scope="col" className={styles.numeric}>
-                Kvantum
-              </th>
-              <th scope="col" className={styles.numeric}>
                 Kolli
-              </th>
-              <th scope="col" className={styles.numeric}>
-                Nettovekt
               </th>
             </tr>
           </thead>
@@ -214,15 +225,15 @@ function ResultView({ document }: { document: FreightDocument }) {
                 <tr key={`${item.productNumber ?? "row"}-${index}`}>
                   <td>{displayValue(item.productName)}</td>
                   <td>{displayValue(item.productNumber)}</td>
-                  <td>{displayValue(item.batchNumber)}</td>
                   <td className={styles.numeric}>
                     {formatQuantity(item.quantity, item.quantityUnit)}
                   </td>
                   <td className={styles.numeric}>
-                    {displayValue(item.packageCount)}
-                  </td>
-                  <td className={styles.numeric}>
                     {formatWeightKg(item.netWeightKg)}
+                  </td>
+                  <td>{displayValue(item.batchNumber)}</td>
+                  <td className={styles.numeric}>
+                    {displayValue(item.packageCount)}
                   </td>
                 </tr>
               ))

@@ -1,12 +1,15 @@
 export interface FreightDocumentItem {
   productName: string | null;
+  /** Produktnummer / artikkelnummer */
   productNumber: string | null;
   batchNumber: string | null;
 
+  /** Antall / levert */
   quantity: number | null;
   quantityUnit: string | null;
 
   packageCount: number | null;
+  /** Vekt i kilogram */
   netWeightKg: number | null;
 }
 
